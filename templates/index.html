@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>EmpathyMail - Support Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+   
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg: #0f1117;
+            --sidebar: #151822;
+            --panel: #1b1f2b;
+            --panel-soft: #222738;
+            --panel-hover: #262c40;
+            --text: #f4f1eb;
+            --muted: #a7a2b3;
+            --line: #30364a;
+
+            --primary: #d8b46a;
+            --primary-soft: rgba(216, 180, 106, 0.14);
+
+            --urgent: #ff6b6b;
+            --urgent-soft: rgba(255, 107, 107, 0.14);
+
+            --medium: #f2b35d;
+            --medium-soft: rgba(242, 179, 93, 0.14);
+
+            --low: #57c785;
+            --low-soft: rgba(87, 199, 133, 0.14);
+
+            --blue: #6da8ff;
+            --blue-soft: rgba(109, 168, 255, 0.14);
+
+            --shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+        }
+
+        [data-theme="light"] {
+            --bg: #f5f1ea;
+            --sidebar: #ffffff;
+            --panel: #ffffff;
+            --panel-soft: #f4efe8;
+            --panel-hover: #eee6dc;
+            --text: #2f2a25;
+            --muted: #70665d;
+            --line: #ded2c4;
+
+            --primary: #8b6f3d;
+            --primary-soft: rgba(139, 111, 61, 0.14);
+
+            --urgent: #c94d4d;
+            --urgent-soft: rgba(201, 77, 77, 0.12);
+
+            --medium: #c9822f;
+            --medium-soft: rgba(201, 130, 47, 0.13);
+
+            --low: #2f9b68;
+            --low-soft: rgba(47, 155, 104, 0.13);
+
+            --blue: #3b73d9;
+            --blue-soft: rgba(59, 115, 217, 0.13);
+
+            --shadow: 0 20px 45px rgba(79, 63, 43, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(216, 180, 106, 0.12), transparent 35%),
+                radial-gradient(circle at top right, rgba(109, 168, 255, 0.12), transparent 30%),
+                var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        [data-theme="light"] body {
+            background:
+                radial-gradient(circle at top left, rgba(139, 111, 61, 0.12), transparent 35%),
+                radial-gradient(circle at top right, rgba(59, 115, 217, 0.10), transparent 30%),
+                var(--bg);
+        }
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 285px;
+            background: rgba(21, 24, 34, 0.95);
+            border-right: 1px solid var(--line);
+            padding: 26px 20px;
+            position: fixed;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(12px);
+        }
+
+        [data-theme="light"] .sidebar {
+            background: rgba(255, 255, 255, 0.96);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 22px;
+            border-bottom: 1px solid var(--line);
+            margin-bottom: 24px;
+        }
+
+        .brand-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 16px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .brand h2 {
+            font-family: "Nunito", sans-serif;
+            font-size: 24px;
+            color: var(--text);
+        }
+
+        .brand p {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .nav-title {
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin: 18px 0 10px;
+            font-weight: 800;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 14px;
+            border-radius: 15px;
+            color: var(--muted);
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 8px;
+            transition: 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background: var(--panel-soft);
+            color: var(--text);
+            transform: translateX(4px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, var(--primary), #b88d3e);
+            color: #111;
+        }
+
+        [data-theme="light"] .nav-item.active {
+            background: linear-gradient(135deg, #8b6f3d, #b8924c);
+            color: white;
+        }
+
+      
+        .theme-toggle-box {
+            margin-top: 6px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .theme-toggle-box:hover {
+            background: var(--panel-hover);
+        }
+
+        .theme-toggle-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text);
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .toggle-switch {
+            width: 48px;
+            height: 26px;
+            background: var(--panel-soft);
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            position: relative;
+        }
+
+        .toggle-dot {
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 3px;
+            transition: 0.25s ease;
+        }
+
+        [data-theme="light"] .toggle-dot {
+            transform: translateX(20px);
+        }
+
+        .agent-box {
+            margin-top: auto;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            padding: 18px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .agent-avatar {
+            width: 47px;
+            height: 47px;
+            border-radius: 50%;
+            background: var(--primary-soft);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+        }
+
+        .agent-box h4 {
+            font-size: 15px;
+        }
+
+        .agent-box p {
+            color: var(--low);
+            font-size: 13px;
+            margin-top: 3px;
+            font-weight: 700;
+        }
+
+        /* Main */
+        .main {
+            margin-left: 285px;
+            padding: 32px 40px;
+            width: calc(100% - 285px);
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 26px;
+        }
+
+        .heading h1 {
+            font-family: "Nunito", sans-serif;
+            font-size: 36px;
+            letter-spacing: -0.5px;
+        }
+
+        .heading p {
+            margin-top: 7px;
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.5;
+            max-width: 720px;
+        }
+
+        .right-tools {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .mood-card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 13px 18px;
+            min-width: 220px;
+            box-shadow: var(--shadow);
+        }
+
+        .mood-card small {
+            color: var(--muted);
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .mood-card h3 {
+            margin-top: 5px;
+            font-size: 18px;
+        }
+
+        .refresh-btn {
+            border: 1px solid var(--line);
+            background: var(--panel);
+            color: var(--text);
+            padding: 13px 16px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-weight: 800;
+            transition: 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background: var(--panel-hover);
+            transform: translateY(-2px);
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .summary-card {
+            background: rgba(27, 31, 43, 0.92);
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            padding: 22px;
+            box-shadow: var(--shadow);
+            transition: 0.25s ease;
+            cursor: pointer;
+        }
+
+        [data-theme="light"] .summary-card {
+            background: var(--panel);
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+            background: var(--panel-hover);
+        }
+
+        .summary-card .icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .summary-card.total .icon {
+            background: var(--blue-soft);
+            color: var(--blue);
+        }
+
+        .summary-card.urgent .icon {
+            background: var(--urgent-soft);
+            color: var(--urgent);
+        }
+
+        .summary-card.medium .icon {
+            background: var(--medium-soft);
+            color: var(--medium);
+        }
+
+        .summary-card.low .icon {
+            background: var(--low-soft);
+            color: var(--low);
+        }
+
+        .summary-card h2 {
+            font-size: 34px;
+            margin-bottom: 3px;
+        }
+
+        .summary-card p {
+            color: var(--muted);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+       
+        .controls {
+            background: rgba(27, 31, 43, 0.88);
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            padding: 18px;
+            margin-bottom: 22px;
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        [data-theme="light"] .controls {
+            background: var(--panel);
+        }
+
+        .search-box {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--panel-soft);
+            border: 1px solid var(--line);
+            border-radius: 15px;
+            padding: 12px 15px;
+        }
+
+        .search-box i {
+            color: var(--muted);
+        }
+
+        .search-box input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: var(--text);
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .search-box input::placeholder {
+            color: var(--muted);
+        }
+
+        .filters {
+            display: flex;
+            gap: 9px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            border: 1px solid var(--line);
+            padding: 10px 15px;
+            border-radius: 999px;
+            background: var(--panel-soft);
+            color: var(--muted);
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .filter-btn:hover {
+            color: var(--text);
+            background: var(--panel-hover);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: #111;
+            border-color: var(--primary);
+        }
+
+        [data-theme="light"] .filter-btn.active {
+            color: white;
+        }
+
+        .section-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 26px 0 17px;
+        }
+
+        .section-head h2 {
+            font-family: "Nunito", sans-serif;
+            font-size: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-count {
+            color: var(--muted);
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+     
+        .email-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .email-card {
+            background: rgba(27, 31, 43, 0.95);
+            border: 1px solid var(--line);
+            border-radius: 26px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            animation: fadeUp 0.35s ease both;
+            transition: 0.25s ease;
+        }
+
+        [data-theme="light"] .email-card {
+            background: var(--panel);
+        }
+
+        .email-card:hover {
+            background: var(--panel-hover);
+            transform: translateY(-3px);
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .email-card.urgent {
+            border-left: 7px solid var(--urgent);
+        }
+
+        .email-card.medium {
+            border-left: 7px solid var(--medium);
+        }
+
+        .email-card.low {
+            border-left: 7px solid var(--low);
+        }
+
+        .email-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .customer {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .customer-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 18px;
+            color: #111;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+        }
+
+        [data-theme="light"] .customer-avatar {
+            color: white;
+        }
+
+        .email-card.urgent .customer-avatar {
+            background: var(--urgent);
+            color: white;
+        }
+
+        .email-card.medium .customer-avatar {
+            background: var(--medium);
+            color: #111;
+        }
+
+        .email-card.low .customer-avatar {
+            background: var(--low);
+            color: #111;
+        }
+
+        [data-theme="light"] .email-card.medium .customer-avatar,
+        [data-theme="light"] .email-card.low .customer-avatar {
+            color: white;
+        }
+
+        .customer h3 {
+            font-size: 17px;
+            margin-bottom: 4px;
+            max-width: 650px;
+            word-break: break-word;
+        }
+
+        .customer p {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .priority {
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 0.4px;
+            white-space: nowrap;
+        }
+
+        .priority.urgent {
+            background: var(--urgent-soft);
+            color: var(--urgent);
+        }
+
+        .priority.medium {
+            background: var(--medium-soft);
+            color: var(--medium);
+        }
+
+        .priority.low {
+            background: var(--low-soft);
+            color: var(--low);
+        }
+
+        .message {
+            background: var(--panel-soft);
+            border: 1px solid var(--line);
+            padding: 17px;
+            border-radius: 18px;
+            color: #ded9cf;
+            line-height: 1.7;
+            font-size: 14.5px;
+            margin-bottom: 16px;
+            white-space: pre-wrap;
+        }
+
+        [data-theme="light"] .message {
+            color: #3d352d;
+        }
+
+        .quick-insight {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: var(--panel-soft);
+            border: 1px solid var(--line);
+            color: var(--text);
+            font-weight: 800;
+            font-size: 13px;
+        }
+
+        .details {
+            display: none;
+            margin-bottom: 16px;
+            background: rgba(15, 17, 23, 0.45);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 16px;
+        }
+
+        [data-theme="light"] .details {
+            background: #faf6ef;
+        }
+
+        .details.open {
+            display: block;
+        }
+
+        .details h4 {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--muted);
+            margin-bottom: 13px;
+        }
+
+        .emotion-bars {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+
+        .emotion {
+            text-align: center;
+        }
+
+        .emotion span {
+            font-size: 21px;
+        }
+
+        .emotion small {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 800;
+            margin: 5px 0;
+        }
+
+        .emotion strong {
+            font-size: 13px;
+        }
+
+        .bar {
+            height: 7px;
+            background: #343a50;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 7px;
+        }
+
+        [data-theme="light"] .bar {
+            background: #ded2c4;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 999px;
+        }
+
+        .agent-guidance {
+            background: rgba(87, 199, 133, 0.10);
+            border: 1px solid rgba(87, 199, 133, 0.25);
+            border-radius: 18px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .agent-guidance h4 {
+            color: var(--low);
+            font-size: 14px;
+            margin-bottom: 7px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .agent-guidance p {
+            color: #c7d8cd;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        [data-theme="light"] .agent-guidance p {
+            color: #40594a;
+        }
+
+        .reply-box {
+            background: rgba(216, 180, 106, 0.10);
+            border: 1px dashed rgba(216, 180, 106, 0.45);
+            border-radius: 18px;
+            padding: 15px;
+            margin-bottom: 17px;
+        }
+
+        .reply-box h4 {
+            color: var(--primary);
+            font-size: 14px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .reply-box p {
+            color: #e4d7bf;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        [data-theme="light"] .reply-box p {
+            color: #4c3b25;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .btn {
+            border: none;
+            padding: 11px 15px;
+            border-radius: 14px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #111;
+        }
+
+        [data-theme="light"] .btn-primary {
+            color: white;
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+
+        .btn-light {
+            background: var(--panel-soft);
+            color: var(--text);
+            border: 1px solid var(--line);
+        }
+
+        .btn-light:hover {
+            background: var(--panel-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--urgent-soft);
+            color: var(--urgent);
+            border: 1px solid rgba(255, 107, 107, 0.25);
+        }
+
+        .loading,
+        .empty {
+            text-align: center;
+            padding: 70px;
+            color: var(--muted);
+            background: var(--panel);
+            border-radius: 24px;
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow);
+        }
+
+        .loading i,
+        .empty i {
+            font-size: 40px;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+
+        .loading h3,
+        .empty h3 {
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+      
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.62);
+            align-items: center;
+            justify-content: center;
+            z-index: 99;
+            backdrop-filter: blur(8px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-box {
+            width: 540px;
+            max-width: 92%;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            padding: 28px;
+            border-radius: 26px;
+            box-shadow: 0 30px 90px rgba(0,0,0,0.45);
+        }
+
+        .modal-box h3 {
+            font-family: "Nunito", sans-serif;
+            font-size: 25px;
+            margin-bottom: 6px;
+        }
+
+        .modal-box p {
+            color: var(--muted);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 170px;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 16px;
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--panel-soft);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .toast {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            color: var(--text);
+            padding: 15px 18px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            display: none;
+            font-weight: 800;
+            z-index: 200;
+        }
+
+        .toast.show {
+            display: block;
+            animation: toastIn 0.25s ease;
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 1150px) {
+            .summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .emotion-bars {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 820px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+                padding: 22px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .summary {
+                grid-template-columns: 1fr;
+            }
+
+            .emotion-bars {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="app">
+
+   
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon">
+                <i class="fa-solid fa-heart-pulse"></i>
+            </div>
+            <div>
+                <h2>EmpathyMail</h2>
+                <p>Human-first support desk</p>
+            </div>
+        </div>
+
+        <div class="nav-title">Inbox Views</div>
+
+        <div class="nav-item active" onclick="setFilter('all', this)">
+            <i class="fa-solid fa-inbox"></i>
+            All conversations
+        </div>
+
+        <div class="nav-item" onclick="setFilter('urgent', this)">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            Needs care
+        </div>
+
+        <div class="nav-item" onclick="setFilter('medium', this)">
+            <i class="fa-solid fa-message"></i>
+            Follow-up
+        </div>
+
+        <div class="nav-item" onclick="setFilter('low', this)">
+            <i class="fa-solid fa-leaf"></i>
+            Calm messages
+        </div>
+
+        <div class="nav-title">Appearance</div>
+
+        <div class="theme-toggle-box" onclick="toggleTheme()">
+            <div class="theme-toggle-left">
+                <i class="fa-solid fa-circle-half-stroke"></i>
+                <span id="themeText">Light mode</span>
+            </div>
+
+            <div class="toggle-switch">
+                <div class="toggle-dot"></div>
+            </div>
+        </div>
+
+        <div class="nav-title">Support Agent</div>
+
+        <div class="agent-box">
+            <div class="agent-avatar">
+                <i class="fa-solid fa-headset"></i>
+            </div>
+            <div>
+                <h4>Support Agent</h4>
+                <p>● Available</p>
+            </div>
+        </div>
+    </aside>
+
+    
+    <main class="main">
+
+        <div class="topbar">
+            <div class="heading">
+                <h1>Customer Care Hub</h1>
+                <p>
+                    Customer emails are read from Gmail, analyzed with IBM Watson NLU,
+                    and arranged by emotional urgency so support teams can respond with care.
+                </p>
+            </div>
+
+            <div class="right-tools">
+                <button class="refresh-btn" onclick="refreshEmails()">
+                    <i class="fa-solid fa-rotate-right"></i> Refresh
+                </button>
+
+                <div class="mood-card">
+                    <small>Inbox mood</small>
+                    <h3 id="moodTitle">😊 Calm</h3>
+                </div>
+            </div>
+        </div>
+
+        
+        <section class="summary">
+            <div class="summary-card total" onclick="setFilter('all')">
+                <div class="icon"><i class="fa-solid fa-envelope"></i></div>
+                <h2 id="totalEmails">0</h2>
+                <p>Total analyzed</p>
+            </div>
+
+            <div class="summary-card urgent" onclick="setFilter('urgent')">
+                <div class="icon"><i class="fa-solid fa-fire"></i></div>
+                <h2 id="urgentCount">0</h2>
+                <p>Needs immediate care</p>
+            </div>
+
+            <div class="summary-card medium" onclick="setFilter('medium')">
+                <div class="icon"><i class="fa-solid fa-comment-dots"></i></div>
+                <h2 id="mediumCount">0</h2>
+                <p>Needs follow-up</p>
+            </div>
+
+            <div class="summary-card low" onclick="setFilter('low')">
+                <div class="icon"><i class="fa-solid fa-leaf"></i></div>
+                <h2 id="lowCount">0</h2>
+                <p>Calm or positive</p>
+            </div>
+        </section>
+
+      
+        <div class="controls">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search by sender, subject, or message..."
+                    oninput="applyFilters()"
+                >
+            </div>
+
+            <div class="filters">
+                <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+                <button class="filter-btn" onclick="setFilter('urgent', this)">Needs care</button>
+                <button class="filter-btn" onclick="setFilter('medium', this)">Follow-up</button>
+                <button class="filter-btn" onclick="setFilter('low', this)">Calm</button>
+            </div>
+        </div>
+
+        <div class="section-head">
+            <h2><i class="fa-solid fa-feather"></i> Conversations</h2>
+            <div class="section-count" id="visibleCount">0 emails shown</div>
+        </div>
+
+        <div id="emailFeed" class="email-feed">
+            <div class="loading">
+                <i class="fa-solid fa-brain"></i>
+                <h3>Reading emotional tone...</h3>
+                <p>Emails are being analyzed with IBM Watson NLU.</p>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+
+<div class="modal" id="replyModal">
+    <div class="modal-box">
+        <h3>Prepare a caring draft</h3>
+        <p id="replyTo">Draft for customer</p>
+
+        <textarea id="replyText"></textarea>
+
+        <div class="modal-actions">
+            <button class="btn btn-light" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveDraft()">Save draft</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast">Done</div>
+
+<script>
+    let allEmails = [];
+    let visibleEmails = [];
+    let currentFilter = "all";
+    let currentReplyTo = "";
+    let reviewedIds = new Set();
+
+    document.addEventListener("DOMContentLoaded", fetchEmails);
+
+    function toggleTheme() {
+        const html = document.documentElement;
+        const themeText = document.getElementById("themeText");
+
+        if (html.getAttribute("data-theme") === "dark") {
+            html.setAttribute("data-theme", "light");
+            themeText.textContent = "Dark mode";
+            showToast("Light mode enabled");
+        } else {
+            html.setAttribute("data-theme", "dark");
+            themeText.textContent = "Light mode";
+            showToast("Dark mode enabled");
+        }
+    }
+
+    async function fetchEmails() {
+        const feed = document.getElementById("emailFeed");
+
+        feed.innerHTML = `
+            <div class="loading">
+                <i class="fa-solid fa-brain"></i>
+                <h3>Reading emotional tone...</h3>
+                <p>Emails are being analyzed with IBM Watson NLU.</p>
+            </div>
+        `;
+
+        try {
+            const res = await fetch("/api/emails");
+            const data = await res.json();
+
+            allEmails = data.map((mail, index) => ({
+                ...mail,
+                _id: index
+            }));
+
+            reviewedIds.clear();
+            updateStats();
+            updateMood();
+            applyFilters();
+
+        } catch (error) {
+            console.error(error);
+
+            feed.innerHTML = `
+                <div class="empty">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <h3>Could not load emails</h3>
+                    <p>Please check your Flask server, Gmail login, and Watson credentials.</p>
+                </div>
+            `;
+        }
+    }
+
+    function refreshEmails() {
+        showToast("Refreshing inbox...");
+        fetchEmails();
+    }
+
+    function updateStats() {
+        const urgent = allEmails.filter(e => e.analysis.priority === "URGENT").length;
+        const medium = allEmails.filter(e => e.analysis.priority === "MEDIUM").length;
+        const low = allEmails.filter(e => e.analysis.priority === "LOW").length;
+
+        document.getElementById("totalEmails").textContent = allEmails.length;
+        document.getElementById("urgentCount").textContent = urgent;
+        document.getElementById("mediumCount").textContent = medium;
+        document.getElementById("lowCount").textContent = low;
+    }
+
+    function updateMood() {
+        const urgent = allEmails.some(e => e.analysis.priority === "URGENT");
+
+        if (urgent) {
+            document.getElementById("moodTitle").textContent = "😟 Needs care";
+        } else {
+            document.getElementById("moodTitle").textContent = "😊 Calm";
+        }
+    }
+
+    function setFilter(type, element = null) {
+        currentFilter = type;
+
+        document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
+        document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active"));
+
+        if (element) {
+            element.classList.add("active");
+        }
+
+        applyFilters();
+    }
+
+    function applyFilters() {
+        const search = document.getElementById("searchInput").value.toLowerCase().trim();
+
+        visibleEmails = allEmails.filter(mail => {
+            if (reviewedIds.has(mail._id)) return false;
+
+            const priorityMatch =
+                currentFilter === "all" ||
+                mail.analysis.priority.toLowerCase() === currentFilter;
+
+            const searchText = `
+                ${mail.from}
+                ${mail.subject}
+                ${mail.body}
+                ${mail.analysis.sentiment}
+                ${mail.analysis.dominant_emotion}
+            `.toLowerCase();
+
+            const searchMatch = searchText.includes(search);
+
+            return priorityMatch && searchMatch;
+        });
+
+        renderEmails(visibleEmails);
+    }
+
+    function renderEmails(emails) {
+        const feed = document.getElementById("emailFeed");
+        const count = document.getElementById("visibleCount");
+
+        feed.innerHTML = "";
+        count.textContent = `${emails.length} email${emails.length !== 1 ? "s" : ""} shown`;
+
+        if (!emails.length) {
+            feed.innerHTML = `
+                <div class="empty">
+                    <i class="fa-solid fa-mug-hot"></i>
+                    <h3>No emails here</h3>
+                    <p>Try changing the filter or search text.</p>
+                </div>
+            `;
+            return;
+        }
+
+        emails.forEach((mail, index) => {
+            const analysis = mail.analysis;
+            const priority = analysis.priority.toLowerCase();
+            const emotion = analysis.emotion || {};
+
+            const card = document.createElement("div");
+            card.className = `email-card ${priority}`;
+            card.style.animationDelay = `${index * 0.05}s`;
+
+            card.innerHTML = `
+                <div class="email-top">
+                    <div class="customer">
+                        <div class="customer-avatar">${getInitials(mail.from)}</div>
+                        <div>
+                            <h3>${escapeHTML(cleanSender(mail.from))}</h3>
+                            <p>${escapeHTML(mail.subject)}</p>
+                        </div>
+                    </div>
+
+                    <div class="priority ${priority}">
+                        ${priorityLabel(analysis.priority)}
+                    </div>
+                </div>
+
+                <div class="message">
+                    ${escapeHTML(mail.body)}
+                </div>
+
+                <div class="quick-insight">
+                    <span class="pill">
+                        ${emotionIcon(analysis.dominant_emotion)}
+                        Main emotion: ${capitalize(analysis.dominant_emotion)}
+                    </span>
+
+                    <span class="pill">
+                        ${sentimentIcon(analysis.sentiment)}
+                        Sentiment: ${capitalize(analysis.sentiment)} (${analysis.score})
+                    </span>
+
+                    <span class="pill">
+                        <i class="fa-solid fa-ranking-star"></i>
+                        ${priorityLabel(analysis.priority)}
+                    </span>
+                </div>
+
+                <div class="details" id="details-${mail._id}">
+                    <h4>Watson NLU emotion balance</h4>
+
+                    <div class="emotion-bars">
+                        ${emotionBar("😠", "Anger", emotion.anger, "#ff6b6b")}
+                        ${emotionBar("😊", "Joy", emotion.joy, "#57c785")}
+                        ${emotionBar("😢", "Sad", emotion.sadness, "#6da8ff")}
+                        ${emotionBar("😨", "Fear", emotion.fear, "#f2b35d")}
+                        ${emotionBar("🤢", "Disgust", emotion.disgust, "#b58cff")}
+                    </div>
+                </div>
+
+                <div class="agent-guidance">
+                    <h4><i class="fa-solid fa-hand-holding-heart"></i> Agent guidance</h4>
+                    <p>${careGuidance(analysis)}</p>
+                </div>
+
+                <div class="reply-box">
+                    <h4><i class="fa-solid fa-pen-nib"></i> Suggested care reply</h4>
+                    <p>${escapeHTML(mail.suggested_reply)}</p>
+                </div>
+
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="openReply(${mail._id})">
+                        Use this draft
+                    </button>
+
+                    <button class="btn btn-light" onclick="copyDraft(${mail._id})">
+                        Copy reply
+                    </button>
+
+                    <button class="btn btn-light" onclick="toggleDetails(${mail._id})">
+                        Watson details
+                    </button>
+
+                    <button class="btn btn-danger" onclick="markReviewed(${mail._id})">
+                        Mark reviewed
+                    </button>
+                </div>
+            `;
+
+            feed.appendChild(card);
+        });
+    }
+
+    function toggleDetails(id) {
+        const box = document.getElementById(`details-${id}`);
+        if (box) box.classList.toggle("open");
+    }
+
+    function markReviewed(id) {
+        reviewedIds.add(id);
+        showToast("Conversation marked as reviewed");
+        applyFilters();
+    }
+
+    function openReply(id) {
+        const mail = allEmails.find(e => e._id === id);
+        if (!mail) return;
+
+        currentReplyTo = mail.from;
+
+        document.getElementById("replyTo").textContent = "Draft for: " + mail.from;
+        document.getElementById("replyText").value = mail.suggested_reply;
+        document.getElementById("replyModal").classList.add("active");
+    }
+
+    function closeModal() {
+        document.getElementById("replyModal").classList.remove("active");
+    }
+
+    async function saveDraft() {
+        const message = document.getElementById("replyText").value;
+
+        await fetch("/api/reply", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                to: currentReplyTo,
+                message: message
+            })
+        });
+
+        closeModal();
+        showToast("Draft saved safely. No real email was sent.");
+    }
+
+    function copyDraft(id) {
+        const mail = allEmails.find(e => e._id === id);
+        if (!mail) return;
+
+        navigator.clipboard.writeText(mail.suggested_reply);
+        showToast("Suggested reply copied");
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.classList.add("show");
+
+        setTimeout(() => {
+            toast.classList.remove("show");
+        }, 2800);
+    }
+
+    function emotionBar(icon, label, value, color) {
+        const percent = Math.round((value || 0) * 100);
+
+        return `
+            <div class="emotion">
+                <span>${icon}</span>
+                <small>${label}</small>
+                <strong>${percent}%</strong>
+
+                <div class="bar">
+                    <div class="bar-fill" style="width:${percent}%; background:${color};"></div>
+                </div>
+            </div>
+        `;
+    }
+
+    function careGuidance(analysis) {
+        if (analysis.priority === "URGENT") {
+            return "This customer may be highly upset. Start by acknowledging their frustration, apologize clearly, and escalate the issue quickly.";
+        }
+
+        if (analysis.priority === "MEDIUM") {
+            return "This message shows concern. Respond with reassurance, explain the next step, and keep the tone calm.";
+        }
+
+        if (analysis.dominant_emotion === "joy") {
+            return "The customer seems positive. Thank them warmly and maintain a friendly tone.";
+        }
+
+        return "This message looks calm. A simple, clear, and helpful response should be enough.";
+    }
+
+    function priorityLabel(priority) {
+        if (priority === "URGENT") return "Needs care";
+        if (priority === "MEDIUM") return "Follow-up";
+        return "Calm";
+    }
+
+    function emotionIcon(emotion) {
+        const map = {
+            anger: "😠",
+            joy: "😊",
+            sadness: "😢",
+            fear: "😨",
+            disgust: "🤢",
+            neutral: "😐"
+        };
+
+        return map[emotion] || "😐";
+    }
+
+    function sentimentIcon(sentiment) {
+        if (sentiment === "positive") return "😊";
+        if (sentiment === "negative") return "😟";
+        return "😐";
+    }
+
+    function getInitials(sender) {
+        const clean = sender.split("@")[0].replace(/[^a-zA-Z]/g, "");
+        return clean.substring(0, 2).toUpperCase() || "CU";
+    }
+
+    function cleanSender(sender) {
+        return sender.length > 55 ? sender.substring(0, 55) + "..." : sender;
+    }
+
+    function capitalize(text) {
+        if (!text) return "Neutral";
+        return text.charAt(0).toUpperCase() + text.slice(1);
+    }
+
+    function escapeHTML(str) {
+        if (!str) return "";
+
+        return String(str)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+    }
+
+    document.getElementById("replyModal").addEventListener("click", function(e) {
+        if (e.target === this) closeModal();
+    });
+</script>
+
+</body>
+</html>
