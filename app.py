@@ -33,7 +33,6 @@ nlu.set_service_url(os.getenv("WATSON_SERVICE_URL"))
 def decode_subject(subject):
     if not subject:
         return "No Subject"
-
     decoded = decode_header(subject)
     out = ""
     for part, enc in decoded:
@@ -45,7 +44,6 @@ def decode_subject(subject):
 
 
 def extract_email_body(msg):
-    # Prefer text/plain (ignore attachments)
     body = ""
     try:
         if msg.is_multipart():
@@ -156,7 +154,7 @@ def analyze_with_watson(text):
 
 
 # ---------------------------
-# Gmail fetch (with debug + privacy-safe behavior)
+# Gmail fetch (with IMAP debug)
 # ---------------------------
 def get_emails_from_gmail():
     emails = []
@@ -165,7 +163,7 @@ def get_emails_from_gmail():
     imap_email = (os.getenv("IMAP_EMAIL") or "").strip()
     imap_password = (os.getenv("IMAP_PASSWORD") or "").strip()
 
-    # ✅ Safe debug (no secrets printed)
+    # ✅ Safe debug (no secrets)
     print("IMAP debug:", {
         "imap_email_set": bool(imap_email),
         "imap_email_len": len(imap_email),
@@ -200,7 +198,6 @@ def get_emails_from_gmail():
             sender = msg.get("From", "unknown@email.com")
             subject = decode_subject(msg.get("Subject"))
             body = extract_email_body(msg)
-
             if not body:
                 body = subject
 
@@ -212,8 +209,8 @@ def get_emails_from_gmail():
 
         mail.close()
         mail.logout()
-
         print(f"✅ Fetched {len(emails)} emails from Gmail")
+
     except Exception as e:
         print("Gmail Error:", e)
 
@@ -255,15 +252,18 @@ def dashboard():
 
 @app.route("/api/emails")
 def api_emails():
+    # privacy_mode will mask ONLY REAL Gmail emails (not demo)
     privacy_mode = os.getenv("PRIVACY_MODE", "1") == "1"
 
     raw_gmail = get_emails_from_gmail()
     if raw_gmail:
-        print("Source: gmail")
+        source = "gmail"
         raw = raw_gmail
+        print("Source: gmail")
     else:
-        print("⚠️ Source: demo (Gmail fetch empty/failed)")
+        source = "demo"
         raw = get_demo_emails()
+        print("⚠️ Source: demo (Gmail fetch empty/failed)")
 
     processed = []
 
@@ -273,15 +273,14 @@ def api_emails():
         mail["analysis"] = analysis
         mail["suggested_reply"] = generate_reply(analysis)
 
-        # ✅ Privacy masking for UI
-        if privacy_mode:
+        # ✅ Only mask when source is gmail (so DEMO messages SHOW)
+        if privacy_mode and source == "gmail":
             mail["from"] = "Customer"
             mail["subject"] = "Customer message"
             mail["body"] = "[Message hidden]"
 
         processed.append(mail)
 
-    # Sort urgent first
     priority_order = {"URGENT": 0, "MEDIUM": 1, "LOW": 2}
     processed.sort(key=lambda x: priority_order.get(x["analysis"]["priority"], 3))
 
@@ -299,7 +298,6 @@ def api_reply():
     print("To:", data.get("to"))
     print("Message:", data.get("message"))
     print("=" * 60)
-
     return jsonify({"status": "saved", "message": "Draft saved safely. No real email was sent."})
 
 
